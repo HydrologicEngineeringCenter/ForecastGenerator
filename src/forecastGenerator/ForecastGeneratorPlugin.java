@@ -30,10 +30,10 @@ import java.util.List;
  * @author WatPowerUser
  */
 public class ForecastGeneratorPlugin extends AbstractSelfContainedWatPlugin<ForecastGeneratorAlternative> implements CreatableWatPlugin, OutputPlugin  {
-    public static final String PluginName = "Basic Plugin";
+    public static final String PluginName = "Forecast Generator";
     private static final String _pluginVersion = "1.0.0";
-    private static final String _pluginSubDirectory = "BasicPlugin";
-    private static final String _pluginExtension = ".bp";
+    private static final String _pluginSubDirectory = "FG";
+    private static final String _pluginExtension = ".fg";
     /**
      * @param args the command line arguments
      */
@@ -44,7 +44,7 @@ public class ForecastGeneratorPlugin extends AbstractSelfContainedWatPlugin<Fore
         super();
         setName(PluginName);
         setProgramOrderItem(new ProgramOrderItem(PluginName,
-                "A plugin constructed from the tutorial",
+                "A plugin designed to mock up ensemble forecasts",
                 false,1,"shortname","Images/fda/wsp.png"));
         WatPluginManager.register(this);
     }
