@@ -29,7 +29,7 @@ import org.jdom.Element;
 public class ForecastGeneratorAlternative extends SelfContainedPluginAlt{
     private List<DataLocation> _dataLocations = new ArrayList<>();
     private String _pluginVersion;
-    private static final String DocumentRoot = "BasicAlternative";
+    private static final String DocumentRoot = "ForecastGeneratorAlternative";
     private static final String AlternativeNameAttribute = "Name";
     private static final String AlternativeDescriptionAttribute = "Desc";
     private ComputeOptions _computeOptions;
