@@ -16,9 +16,9 @@ import java.util.ResourceBundle;
 public class ForecastGeneratorMessages {
     public static final String Bundle_Name = ForecastGeneratorI18n.BUNDLE_NAME;
     private static final ResourceBundle RESOURCE_BUNDLE = ResourceBundle.getBundle(Bundle_Name);
-    public static final String Plugin_Name = "BasicPlugin.Name";
-    public static final String Plugin_Description = "BasicPlugin.Description";
-    public static final String Plugin_Short_name = "BasicPlugin.ShortName";
+    public static final String Plugin_Name = "ForecastGeneratorPlugin.Name";
+    public static final String Plugin_Description = "ForecastGeneratorPlugin.Description";
+    public static final String Plugin_Short_name = "ForecastGeneratorPlugin.ShortName";
     private ForecastGeneratorMessages(){
         super();
     }
