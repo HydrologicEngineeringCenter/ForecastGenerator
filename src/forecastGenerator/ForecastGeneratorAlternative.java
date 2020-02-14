@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.jdom.Document;
 import org.jdom.Element;
+import hec.ensemble.Ensemble;
 /**
  *
  * @author WatPowerUser

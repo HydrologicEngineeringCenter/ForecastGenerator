@@ -2,12 +2,6 @@
 <project-private xmlns="http://www.netbeans.org/ns/project-private/1">
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
-        <group>
-            <file>file:/C:/Examples/ForecastGenerator/src/forecastGenerator/ForecastGeneratorI18n.java</file>
-            <file>file:/C:/Examples/ForecastGenerator/src/forecastGenerator/ForecastGeneratorMessages.java</file>
-            <file>file:/C:/Examples/ForecastGenerator/src/forecastGenerator/ForecastGeneratorAlternative.java</file>
-            <file>file:/C:/Examples/ForecastGenerator/src/forecastGenerator/ForecastGeneratorPlugin.java</file>
-            <file>file:/C:/Examples/ForecastGenerator/src/forecastGenerator/ForecastAlternativeFactory.java</file>
-        </group>
+        <group/>
     </open-files>
 </project-private>
