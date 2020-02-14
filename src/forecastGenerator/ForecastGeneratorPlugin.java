@@ -107,7 +107,7 @@ public class ForecastGeneratorPlugin extends AbstractSelfContainedWatPlugin<Fore
     }
     @Override
     public void editAlternative(ForecastGeneratorAlternative e) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        //no editor currently
     }
     @Override
     public boolean displayApplication() {
@@ -127,7 +127,7 @@ public class ForecastGeneratorPlugin extends AbstractSelfContainedWatPlugin<Fore
     }
     @Override
     public boolean displayOutput(OutputElement oe, List<ModelAlternative> list) throws OutputException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return false;//no editor currently.
     }
     @Override
     public List<EditAction> getEditActions(ModelAlternative ma) {
