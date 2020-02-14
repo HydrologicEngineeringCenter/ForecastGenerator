@@ -10,7 +10,6 @@ import hec.model.OutputVariable;
 import hec2.map.GraphicElement;
 import hec2.model.DataLocation;
 import hec2.model.ProgramOrderItem;
-import hec2.plugin.PathnameUtilities;
 import hec2.plugin.action.EditAction;
 import hec2.plugin.action.OutputElement;
 import hec2.plugin.lang.ModelLinkingException;
@@ -20,10 +19,8 @@ import hec2.wat.model.tracking.OutputPlugin;
 import hec2.wat.model.tracking.OutputVariableImpl;
 import hec2.wat.plugin.AbstractSelfContainedWatPlugin;
 import hec2.wat.plugin.CreatableWatPlugin;
-import hec2.wat.plugin.HydrologicEventPlugin;
 import hec2.wat.plugin.WatPluginManager;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 /**
  *

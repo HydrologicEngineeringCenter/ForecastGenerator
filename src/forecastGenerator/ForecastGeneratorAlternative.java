@@ -12,14 +12,10 @@ import hec.heclib.dss.HecDSSDataAttributes;
 import hec.io.DSSIdentifier;
 import hec.io.TimeSeriesContainer;
 import hec2.model.DataLocation;
-import hec2.plugin.PathnameUtilities;
 import hec2.plugin.model.ComputeOptions;
-import hec2.plugin.model.ModelAlternative;
 import hec2.plugin.selfcontained.SelfContainedPluginAlt;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import org.jdom.Document;
 import org.jdom.Element;
 /**
@@ -93,46 +89,36 @@ public class ForecastGeneratorAlternative extends SelfContainedPluginAlt{
     }
     private List<DataLocation> defaultDataLocations(){
        	if(!_dataLocations.isEmpty()){
-            //locations have previously been set (most likely from reading
-            //in an existing alternative file.
-            for(DataLocation dl : _dataLocations){
-                String dlparts = dl.getDssPath();
-                DSSPathname p = new DSSPathname(dlparts);
-                if(p.aPart()==""&&p.bPart()==""&&p.cPart()==""&&p.dPart()==""&&p.ePart()==""&&p.fPart()==""){
-                    if(validLinkedToDssPath(dl)){
-                        setDssParts(dl);
-                    }
-                }
-            }
             return _dataLocations;
         }
         List<DataLocation> dlList = new ArrayList<>();
         //create a default location so that links can be initialized.
-        DataLocation dloc = new DataLocation(this.getModelAlt(),_name,"Any");
+        DataLocation dloc = new DataLocation(this.getModelAlt(),_name,"Input Forecast");
         dlList.add(dloc);
 	return dlList; 
     }
     public boolean setDataLocations(List<DataLocation> dataLocations){
-        boolean retval = false;
+        boolean retval = true;
         for(DataLocation dl : dataLocations){
             if(!_dataLocations.contains(dl)){
                 DataLocation linkedTo = dl.getLinkedToLocation();
-                String dssPath = linkedTo.getDssPath();
-                if(validLinkedToDssPath(dl))
-                {
-                    setModified(true);
-                    setDssParts(dl);
-                    _dataLocations.add(dl);
-                    retval = true;
+                if(linkedTo!=null){
+                    if(validLinkedToDssPath(dl))
+                    {
+                        setModified(true);
+                        //setDssParts(dl);
+                        _dataLocations.add(dl);
+                        retval = true;
+                    }                    
                 }
             }else{
                 DataLocation linkedTo = dl.getLinkedToLocation();
-                String dssPath = linkedTo.getDssPath();
-                if(validLinkedToDssPath(dl))
-                {
-                    setModified(true);
-                    setDssParts(dl);;
-                    retval = true;
+                if(linkedTo!=null){
+                    if(validLinkedToDssPath(dl))
+                    {
+                        setModified(true);
+                        retval = true;
+                    }                    
                 }
             }
         }
@@ -143,18 +129,6 @@ public class ForecastGeneratorAlternative extends SelfContainedPluginAlt{
         DataLocation linkedTo = dl.getLinkedToLocation();
         String dssPath = linkedTo.getDssPath();
         return !(dssPath == null || dssPath.isEmpty());
-    }
-    private void setDssParts(DataLocation dl){
-        DataLocation linkedTo = dl.getLinkedToLocation();
-        String dssPath = linkedTo.getDssPath();
-        DSSPathname p = new DSSPathname(dssPath);
-        String[] parts = p.getParts();
-        parts[1] = parts[1] + " Output";
-        ModelAlternative malt = this.getModelAlt();
-        malt.setProgram(ForecastGeneratorPlugin.PluginName);
-        parts[5] = "C000000:" + _name + ":" + PathnameUtilities.getWatFPartModelPart(malt);
-        p.setParts(parts);
-        dl.setDssPath(p.getPathname());
     }
     public void setComputeOptions(ComputeOptions opts){
         _computeOptions = opts;
