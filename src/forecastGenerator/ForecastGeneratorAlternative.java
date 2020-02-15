@@ -5,12 +5,7 @@
  */
 
 package forecastGenerator;
-import com.rma.io.DssFileManagerImpl;
 import com.rma.io.RmaFile;
-import hec.heclib.dss.DSSPathname;
-import hec.heclib.dss.HecDSSDataAttributes;
-import hec.io.DSSIdentifier;
-import hec.io.TimeSeriesContainer;
 import hec2.model.DataLocation;
 import hec2.plugin.model.ComputeOptions;
 import hec2.plugin.selfcontained.SelfContainedPluginAlt;
@@ -18,7 +13,10 @@ import java.util.ArrayList;
 import java.util.List;
 import org.jdom.Document;
 import org.jdom.Element;
-import hec.ensemble.Ensemble;
+import hec.ensemble.EnsembleTimeSeriesDatabase;
+import hec2.wat.client.WatFrame;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 /**
  *
  * @author WatPowerUser
@@ -107,7 +105,6 @@ public class ForecastGeneratorAlternative extends SelfContainedPluginAlt{
                     if(validLinkedToDssPath(dl))
                     {
                         setModified(true);
-                        //setDssParts(dl);
                         _dataLocations.add(dl);
                         retval = true;
                     }                    
@@ -143,103 +140,40 @@ public class ForecastGeneratorAlternative extends SelfContainedPluginAlt{
         if(_computeOptions instanceof hec2.wat.model.ComputeOptions){
             boolean returnValue = true;
             hec2.wat.model.ComputeOptions wco = (hec2.wat.model.ComputeOptions)_computeOptions;
-            double multiplier = 1.0;
+            WatFrame fr = hec2.wat.WAT.getWatFrame();
+            fr.addMessage("Computing Forecast Generator Alternative: " + _name);
+            fr.addMessage("Simulation Time window is: " + wco.getSimulationTimeWindow().getTimeWindowString());
+            fr.addMessage("Run Time window is: " + wco.getRunTimeWindow().getTimeWindowString());
+            fr.addMessage("Event Time window is: " + wco.getEventList().get(wco.getCurrentEventNumber()).getTimeWindowString());
+            fr.addMessage("Realization Number is: " + wco.getCurrentRealizationNumber());
+            fr.addMessage("Lifecycle Number is: " + wco.getCurrentLifecycleNumber());
+            fr.addMessage("Event Number is: " + wco.getCurrentEventNumber());
+            fr.addMessage("Model Sequence number is: " + wco.getModelPosition());
+            fr.addMessage("Run Directory is: " + wco.getRunDirectory());
+            fr.addMessage("DSS File Path is:" + wco.getDssFilename());
+            fr.addMessage("Compute Options Written To string Yeilds:");
+            fr.addMessage(wco.toString());
+            
+            String inputPath = "";//this path should be based on the alternative, set by the user in the base WAT directory /FG folder.
+            try {
+                hec.ensemble.EnsembleTimeSeriesDatabase dbase = new hec.ensemble.JdbcEnsembleTimeSeriesDatabase(inputPath, false);
+            } catch (Exception ex) {
+                Logger.getLogger(ForecastGeneratorAlternative.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            String outputPath = wco.getDssFilename();
             if(wco.isFrmCompute()){
                 //stochastic
-                multiplier = wco.getEventRandom();
+                //in this case, the data needs to be copied to the lifecycle directory based on the time window of the lifecycle?
+                
+                
             }else{
                 //deterministic
-                multiplier = 2.0;
-            }
-            String dssFilePath = wco.getDssFilename();
-            for(DataLocation dl : _dataLocations){
-            //read input data source
-                String dssPath = dl.getLinkedToLocation().getDssPath();
-                TimeSeriesContainer tsc = ReadTimeSeries(dssFilePath,dssPath,wco.isFrmCompute());
-            //multiply input data
-                TimeSeriesContainer output = UpdateTimeSeries(tsc,multiplier);
-            //write output data    
-                if(!WriteTimeSeries(output,dl,dssFilePath)){
-                    returnValue = false;
-                }
+                //in a deterministic compute, the file should be copied (based on the Time Window) without manipulation.
             }
             return returnValue;
         }
+        //theoretically, this could mean it is a CWMS compute. 
         return false;
-    }
-    private TimeSeriesContainer ReadTimeSeries(String DssFilePath, String dssPath, boolean isFRM){
-        DSSPathname pathName = new DSSPathname(dssPath);
-        String InputFPart = pathName.getFPart();
-        if(isFRM){
-            int AltFLastIdx = _computeOptions.getFpart().lastIndexOf(":");
-            if(InputFPart.contains(":")){
-                int oldFLastIdx = InputFPart.lastIndexOf(":");
-                pathName.setFPart(_computeOptions.getFpart().substring(0,AltFLastIdx)+ InputFPart.substring(oldFLastIdx,InputFPart.length()));
-            }  
-        }
-        DSSIdentifier eventDss = new DSSIdentifier(DssFilePath,pathName.getPathname());
-        eventDss.setStartTime(_computeOptions.getRunTimeWindow().getStartTime());
-	eventDss.setEndTime(_computeOptions.getRunTimeWindow().getEndTime());
-        int type = DssFileManagerImpl.getDssFileManager().getRecordType(eventDss);
-        if((HecDSSDataAttributes.REGULAR_TIME_SERIES<=type && type < HecDSSDataAttributes.PAIRED)){
-            boolean exist = DssFileManagerImpl.getDssFileManager().exists(eventDss);
-            TimeSeriesContainer eventTsc = null;
-            if (!exist )
-            {
-                try
-                {
-                    Thread.sleep(1000);
-                }
-                catch (InterruptedException e)
-                {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
-            }
-            eventTsc = DssFileManagerImpl.getDssFileManager().readTS(eventDss, true);
-            if ( eventTsc != null )
-            {
-                exist = eventTsc.numberValues > 0;
-            }
-            if(exist){
-                return eventTsc;
-            }else{
-                return null;
-            }
-        }else{
-            return null;
-        }
-    }
-    private TimeSeriesContainer UpdateTimeSeries(TimeSeriesContainer input, double multiplier){
-        TimeSeriesContainer outTsc = (TimeSeriesContainer)input.clone();
-        double[] vals = outTsc.values;
-        double[] outVals = new double[vals.length];
-        _maxVal = Double.MIN_VALUE;
-        for(int i = 0; i<vals.length;i++){
-            outVals[i] = vals[i]*multiplier;
-            if(outVals[i]>_maxVal)_maxVal = outVals[i];
-        }
-        outTsc.values = outVals;
-        return outTsc;
-    }
-    protected double getOutputValue(){
-        return _maxVal;
-    }
-    private boolean WriteTimeSeries(TimeSeriesContainer tsc, DataLocation dl,String dssFilePath){
-        DSSPathname pathname = new DSSPathname(dl.getDssPath());
-	pathname.setFPart(_computeOptions.getFpart());
-        DSSIdentifier eventDss = new DSSIdentifier(dssFilePath,pathname.getPathname());
-        eventDss.setStartTime(_computeOptions.getRunTimeWindow().getStartTime());
-	eventDss.setEndTime(_computeOptions.getRunTimeWindow().getEndTime());
-        tsc.fullName = pathname.getPathname();
-        tsc.fileName = _computeOptions.getDssFilename();
-        boolean exist = DssFileManagerImpl.getDssFileManager().exists(eventDss);
-        if(exist){
-            if(!_computeOptions.shouldForceCompute()){
-                return true;
-            }            
-        }
-        return 0 == DssFileManagerImpl.getDssFileManager().write(tsc);
     }
     @Override
     public boolean cancelCompute() {

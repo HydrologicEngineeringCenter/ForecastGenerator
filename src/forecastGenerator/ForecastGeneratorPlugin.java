@@ -15,6 +15,7 @@ import hec2.plugin.action.OutputElement;
 import hec2.plugin.lang.ModelLinkingException;
 import hec2.plugin.lang.OutputException;
 import hec2.plugin.model.ModelAlternative;
+import hec2.wat.client.WatFrame;
 import hec2.wat.model.tracking.OutputPlugin;
 import hec2.wat.model.tracking.OutputVariableImpl;
 import hec2.wat.plugin.AbstractSelfContainedWatPlugin;
@@ -151,10 +152,12 @@ public class ForecastGeneratorPlugin extends AbstractSelfContainedWatPlugin<Fore
 
     @Override
     public boolean computeOutputVariables(List<OutputVariable> list, ModelAlternative ma) {
+        WatFrame fr = hec2.wat.WAT.getWatFrame();
         for(OutputVariable o : list){
             OutputVariableImpl oimpl = (OutputVariableImpl)o;
             ForecastGeneratorAlternative alt = getAlt(ma);
-            oimpl.setValue(alt.getOutputValue());
+            fr.addMessage("Output Variable was set to NaN!!! Come fix the Forecast Generator Plugin ComputeOutputVariables method.");
+            oimpl.setValue(Double.NaN);
         }
         return true;
     }
