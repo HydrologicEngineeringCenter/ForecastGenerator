@@ -155,11 +155,11 @@ public class ForecastGeneratorAlternative extends SelfContainedPluginAlt{
             fr.addMessage(wco.toString());
             
             String inputPath = "";//this path should be based on the alternative, set by the user in the base WAT directory /FG folder.
-            try {
-                hec.ensemble.EnsembleTimeSeriesDatabase dbase = new hec.ensemble.JdbcEnsembleTimeSeriesDatabase(inputPath, false);
-            } catch (Exception ex) {
-                Logger.getLogger(ForecastGeneratorAlternative.class.getName()).log(Level.SEVERE, null, ex);
-            }
+//            try {
+//                hec.ensemble.EnsembleTimeSeriesDatabase dbase = new hec.ensemble.JdbcEnsembleTimeSeriesDatabase(inputPath, false);
+//            } catch (Exception ex) {
+//                Logger.getLogger(ForecastGeneratorAlternative.class.getName()).log(Level.SEVERE, null, ex);
+//            }
             String outputPath = wco.getDssFilename();
             if(wco.isFrmCompute()){
                 //stochastic
