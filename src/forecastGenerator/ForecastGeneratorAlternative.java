@@ -144,7 +144,7 @@ public class ForecastGeneratorAlternative extends SelfContainedPluginAlt{
             fr.addMessage("Computing Forecast Generator Alternative: " + _name);
             fr.addMessage("Simulation Time window is: " + wco.getSimulationTimeWindow().getTimeWindowString());
             fr.addMessage("Run Time window is: " + wco.getRunTimeWindow().getTimeWindowString());
-            fr.addMessage("Event Time window is: " + wco.getEventList().get(wco.getCurrentEventNumber()).getTimeWindowString());
+            fr.addMessage("Event Time window is: " + wco.getEventList().get(wco.getCurrentEventNumber()-1).getTimeWindowString());
             fr.addMessage("Realization Number is: " + wco.getCurrentRealizationNumber());
             fr.addMessage("Lifecycle Number is: " + wco.getCurrentLifecycleNumber());
             fr.addMessage("Event Number is: " + wco.getCurrentEventNumber());
