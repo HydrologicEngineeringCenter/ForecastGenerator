@@ -27,8 +27,15 @@ public class ForecastGeneratorAlternative extends SelfContainedPluginAlt{
     private static final String DocumentRoot = "ForecastGeneratorAlternative";
     private static final String AlternativeNameAttribute = "Name";
     private static final String AlternativeDescriptionAttribute = "Desc";
+    private static final String AlternativeDataset = "Input_Data";
     private ComputeOptions _computeOptions;
-    private double _maxVal;
+    private String _inputPath = "";
+    private void setInputPath(String path){
+        _inputPath = path;
+    }
+    private String getInputPath(){
+        return _inputPath;
+    }
     public ForecastGeneratorAlternative(){
         super();
         _dataLocations = new ArrayList<>();
@@ -43,6 +50,7 @@ public class ForecastGeneratorAlternative extends SelfContainedPluginAlt{
             Element root = new Element(DocumentRoot);
             root.setAttribute(AlternativeNameAttribute,getName());
             root.setAttribute(AlternativeDescriptionAttribute,getDescription());
+            root.setAttribute(AlternativeDataset,getInputPath());
             if(_dataLocations!=null){
                 saveDataLocations(root,_dataLocations);
             }
@@ -62,6 +70,11 @@ public class ForecastGeneratorAlternative extends SelfContainedPluginAlt{
             if(ele.getName().equals(DocumentRoot)){
                 setName(ele.getAttributeValue(AlternativeNameAttribute));
                 setDescription(ele.getAttributeValue(AlternativeDescriptionAttribute));
+                if(ele.getAttribute(AlternativeDataset)!=null){
+                setInputPath(ele.getAttributeValue(AlternativeDataset));
+                }else{
+                    setInputPath("");
+                }
             }else{
                 System.out.println("XML document root was imporoperly named.");
                 return false;
@@ -151,12 +164,12 @@ public class ForecastGeneratorAlternative extends SelfContainedPluginAlt{
             fr.addMessage("Model Sequence number is: " + wco.getModelPosition());
             fr.addMessage("Run Directory is: " + wco.getRunDirectory());
             fr.addMessage("DSS File Path is:" + wco.getDssFilename());
+            fr.addMessage("Input Data path is: " + getInputPath());
             fr.addMessage("Compute Options Written To string Yeilds:");
             fr.addMessage(wco.toString());
             
-            String inputPath = "";//this path should be based on the alternative, set by the user in the base WAT directory /FG folder.
 //            try {
-//                hec.ensemble.EnsembleTimeSeriesDatabase dbase = new hec.ensemble.JdbcEnsembleTimeSeriesDatabase(inputPath, false);
+//                hec.ensemble.EnsembleTimeSeriesDatabase dbase = new hec.ensemble.JdbcEnsembleTimeSeriesDatabase(_inputPath, false);
 //            } catch (Exception ex) {
 //                Logger.getLogger(ForecastGeneratorAlternative.class.getName()).log(Level.SEVERE, null, ex);
 //            }
