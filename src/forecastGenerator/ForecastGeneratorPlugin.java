@@ -23,6 +23,8 @@ import hec2.wat.plugin.CreatableWatPlugin;
 import hec2.wat.plugin.WatPluginManager;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 /**
  *
  * @author WatPowerUser
@@ -37,6 +39,16 @@ public class ForecastGeneratorPlugin extends AbstractSelfContainedWatPlugin<Fore
      */
     public static void main(String[] args) {
         ForecastGeneratorPlugin p = new ForecastGeneratorPlugin();
+//        String outputPath = "C:/Temp/Ensembles/test.db";
+//        java.io.File f = new java.io.File(outputPath);
+//        if(f.exists()){
+//            f.delete();
+//        }
+//        try {
+//            hec.ensemble.JdbcEnsembleTimeSeriesDatabase dbaseOut = new hec.ensemble.JdbcEnsembleTimeSeriesDatabase(outputPath,true);
+//        } catch (Exception ex) {
+//            Logger.getLogger(ForecastGeneratorPlugin.class.getName()).log(Level.SEVERE, null, ex);
+//        }
     }
     public ForecastGeneratorPlugin(){
         super();
