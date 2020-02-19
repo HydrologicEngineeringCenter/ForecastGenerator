@@ -167,20 +167,30 @@ public class ForecastGeneratorAlternative extends SelfContainedPluginAlt{
             fr.addMessage("Input Data path is: " + getInputPath());
             fr.addMessage("Compute Options Written To string Yeilds:");
             fr.addMessage(wco.toString());
-            
+            ArrayList<hec.ensemble.EnsembleTimeSeries> etsList = new ArrayList<>();
+            //this should only happen once per lifecycle...
             try {
                 hec.ensemble.JdbcEnsembleTimeSeriesDatabase dbase = new hec.ensemble.JdbcEnsembleTimeSeriesDatabase(_inputPath, false);
                 hec.ensemble.TimeSeriesIdentifier[] locations = dbase.getTimeSeriesIDs();
                 int count = 0;
                 for (hec.ensemble.TimeSeriesIdentifier tsid : locations) {
                     hec.ensemble.EnsembleTimeSeries ets = dbase.getEnsembleTimeSeries(tsid);
+                    //loop through the ets and modify the values based on the random number.
+                    
+                    etsList.add(ets);
                     count += ets.getCount();
                 }
                 fr.addMessage("Found " + Integer.toString(count) + " ensembles");
             } catch (Exception ex) {
                 Logger.getLogger(ForecastGeneratorAlternative.class.getName()).log(Level.SEVERE, null, ex);
             }
-            String outputPath = wco.getDssFilename();
+            String outputPath = changeExtension(wco.getDssFilename(),"db");
+            try {
+                hec.ensemble.JdbcEnsembleTimeSeriesDatabase dbaseOut = new hec.ensemble.JdbcEnsembleTimeSeriesDatabase(outputPath,true);
+                dbaseOut.write(etsList.toArray(new hec.ensemble.EnsembleTimeSeries[0]));
+            } catch (Exception ex) {
+                Logger.getLogger(ForecastGeneratorAlternative.class.getName()).log(Level.SEVERE, null, ex);
+            }
             if(wco.isFrmCompute()){
                 //stochastic
                 //in this case, the data needs to be copied to the lifecycle directory based on the time window of the lifecycle?
@@ -194,6 +204,11 @@ public class ForecastGeneratorAlternative extends SelfContainedPluginAlt{
         }
         //theoretically, this could mean it is a CWMS compute. 
         return false;
+    }
+    private String changeExtension(String f, String newExtension) {
+        int i = f.lastIndexOf('.');
+        String oldPathandName = f.substring(0,i);
+        return oldPathandName + '.' + newExtension;
     }
     @Override
     public boolean cancelCompute() {
