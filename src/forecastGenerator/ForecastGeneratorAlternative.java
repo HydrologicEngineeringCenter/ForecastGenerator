@@ -168,11 +168,18 @@ public class ForecastGeneratorAlternative extends SelfContainedPluginAlt{
             fr.addMessage("Compute Options Written To string Yeilds:");
             fr.addMessage(wco.toString());
             
-//            try {
-//                hec.ensemble.EnsembleTimeSeriesDatabase dbase = new hec.ensemble.JdbcEnsembleTimeSeriesDatabase(_inputPath, false);
-//            } catch (Exception ex) {
-//                Logger.getLogger(ForecastGeneratorAlternative.class.getName()).log(Level.SEVERE, null, ex);
-//            }
+            try {
+                hec.ensemble.JdbcEnsembleTimeSeriesDatabase dbase = new hec.ensemble.JdbcEnsembleTimeSeriesDatabase(_inputPath, false);
+                hec.ensemble.TimeSeriesIdentifier[] locations = dbase.getTimeSeriesIDs();
+                int count = 0;
+                for (hec.ensemble.TimeSeriesIdentifier tsid : locations) {
+                    hec.ensemble.EnsembleTimeSeries ets = dbase.getEnsembleTimeSeries(tsid);
+                    count += ets.getCount();
+                }
+                fr.addMessage("Found " + Integer.toString(count) + " ensembles");
+            } catch (Exception ex) {
+                Logger.getLogger(ForecastGeneratorAlternative.class.getName()).log(Level.SEVERE, null, ex);
+            }
             String outputPath = wco.getDssFilename();
             if(wco.isFrmCompute()){
                 //stochastic
