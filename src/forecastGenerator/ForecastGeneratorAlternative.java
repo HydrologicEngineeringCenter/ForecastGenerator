@@ -168,13 +168,29 @@ public class ForecastGeneratorAlternative extends SelfContainedPluginAlt{
             fr.addMessage("Compute Options Written To string Yeilds:");
             fr.addMessage(wco.toString());
             ArrayList<hec.ensemble.EnsembleTimeSeries> etsList = new ArrayList<>();
+            String outputPath = changeExtension(wco.getDssFilename(),"db");
             //this should only happen once per lifecycle...
+            if(!wco.isModelFirstTime()){ return returnValue;}
+            if(wco.getCurrentEventNumber()!=1){
+                fr.addMessage("Is model first compute and event number is not 1");
+                java.io.File of = new java.io.File(outputPath);
+                if(of.exists()){
+                    
+                    if(wco.shouldForceCompute()){
+                        fr.addMessage("File exists, force compute is true, deleting old file");
+                        of.delete();
+                        
+                    }else{
+                        fr.addMessage("File exists, skipping");
+                    }
+                }
+            }
             try {
                 hec.ensemble.JdbcEnsembleTimeSeriesDatabase dbase = new hec.ensemble.JdbcEnsembleTimeSeriesDatabase(_inputPath, false);
                 hec.ensemble.TimeSeriesIdentifier[] locations = dbase.getTimeSeriesIDs();
                 int count = 0;
                 for (hec.ensemble.TimeSeriesIdentifier tsid : locations) {
-                    hec.ensemble.EnsembleTimeSeries ets = dbase.getEnsembleTimeSeries(tsid);
+                    hec.ensemble.EnsembleTimeSeries ets = dbase.getEnsembleTimeSeries((hec.ensemble.TimeSeriesIdentifier)tsid);
                     //loop through the ets and modify the values based on the random number.
                     
                     etsList.add(ets);
@@ -184,7 +200,7 @@ public class ForecastGeneratorAlternative extends SelfContainedPluginAlt{
             } catch (Exception ex) {
                 Logger.getLogger(ForecastGeneratorAlternative.class.getName()).log(Level.SEVERE, null, ex);
             }
-            String outputPath = changeExtension(wco.getDssFilename(),"db");
+            
             try {
                 hec.ensemble.JdbcEnsembleTimeSeriesDatabase dbaseOut = new hec.ensemble.JdbcEnsembleTimeSeriesDatabase(outputPath,true);
                 dbaseOut.write(etsList.toArray(new hec.ensemble.EnsembleTimeSeries[0]));
