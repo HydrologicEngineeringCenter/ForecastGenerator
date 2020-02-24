@@ -13,9 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.jdom.Document;
 import org.jdom.Element;
-import hec.ensemble.EnsembleTimeSeriesDatabase;
 import hec2.wat.client.WatFrame;
-import java.time.ZonedDateTime;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 /**
@@ -187,11 +185,11 @@ public class ForecastGeneratorAlternative extends SelfContainedPluginAlt{
                 }
             }
             try {
-                hec.ensemble.JdbcEnsembleTimeSeriesDatabase dbase = new hec.ensemble.JdbcEnsembleTimeSeriesDatabase(_inputPath, false);
+                hec.JdbcTimeSeriesDatabase dbase = new hec.JdbcTimeSeriesDatabase(_inputPath, false);
                 hec.ensemble.TimeSeriesIdentifier[] locations = dbase.getTimeSeriesIDs();
                 int count = 0;
-                for (hec.ensemble.TimeSeriesIdentifier tsid : locations) {
-                    hec.ensemble.EnsembleTimeSeries ets = dbase.getEnsembleTimeSeries(tsid);
+                //for (hec.ensemble.TimeSeriesIdentifier tsid : locations) {
+                    hec.ensemble.EnsembleTimeSeries ets = dbase.getEnsembleTimeSeries(locations[0]);
                     //loop through the ets and modify the values based on the random number.
                     //will need to put them in a temporary store problably
 //                    for(ZonedDateTime t: ets.getIssueDates()){
@@ -202,7 +200,7 @@ public class ForecastGeneratorAlternative extends SelfContainedPluginAlt{
 //                    }
                     etsList.add(ets);
                     count += ets.getCount();
-                }
+                //}
                 fr.addMessage("Found " + Integer.toString(locations.length) + " ensembles");
             } catch (Exception ex) {
                 Logger.getLogger(ForecastGeneratorAlternative.class.getName()).log(Level.SEVERE, null, ex);
@@ -210,7 +208,7 @@ public class ForecastGeneratorAlternative extends SelfContainedPluginAlt{
             
             try {
                 fr.addMessage("Output Path " + outputPath);
-                hec.ensemble.JdbcEnsembleTimeSeriesDatabase dbaseOut = new hec.ensemble.JdbcEnsembleTimeSeriesDatabase(outputPath,false);
+                hec.JdbcTimeSeriesDatabase dbaseOut = new hec.JdbcTimeSeriesDatabase(outputPath,true);
                 dbaseOut.write(etsList.toArray(new hec.ensemble.EnsembleTimeSeries[0]));
             } catch (Exception ex) {
                 Logger.getLogger(ForecastGeneratorAlternative.class.getName()).log(Level.SEVERE, null, ex);
