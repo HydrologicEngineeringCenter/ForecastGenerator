@@ -201,7 +201,7 @@ public class ForecastGeneratorAlternative extends SelfContainedPluginAlt{
                     etsList.add(ets);
                     count += ets.getCount();
                 //}
-                fr.addMessage("Found " + Integer.toString(locations.length) + " ensembles");
+                fr.addMessage("Found " + Integer.toString(locations.length) + " locations");
             } catch (Exception ex) {
                 Logger.getLogger(ForecastGeneratorAlternative.class.getName()).log(Level.SEVERE, null, ex);
             }
