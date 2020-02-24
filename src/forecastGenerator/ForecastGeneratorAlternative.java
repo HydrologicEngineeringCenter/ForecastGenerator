@@ -202,6 +202,9 @@ public class ForecastGeneratorAlternative extends SelfContainedPluginAlt{
                     count += ets.getCount();
                 //}
                 fr.addMessage("Found " + Integer.toString(locations.length) + " locations");
+                fr.addMessage("Location " + ets.getTimeSeriesIdentifier().location + " has " + Integer.toString(count) + " ensembles.");
+                hec.ensemble.Ensemble e = ets.getEnsemble(ets.getIssueDates().get(0),25);
+                fr.addMessage("The first ensemble has " + e.getValues().length + " ensemble members with " + e.getValues()[0].length + " values.");
             } catch (Exception ex) {
                 Logger.getLogger(ForecastGeneratorAlternative.class.getName()).log(Level.SEVERE, null, ex);
             }
