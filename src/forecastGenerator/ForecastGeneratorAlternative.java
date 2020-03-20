@@ -6,6 +6,9 @@
 
 package forecastGenerator;
 import com.rma.io.RmaFile;
+import hec.ensemble.Ensemble;
+import hec.ensemble.EnsembleTimeSeries;
+import hec.ensemble.TimeSeriesIdentifier;
 import hec2.model.DataLocation;
 import hec2.plugin.model.ComputeOptions;
 import hec2.plugin.selfcontained.SelfContainedPluginAlt;
@@ -166,7 +169,6 @@ public class ForecastGeneratorAlternative extends SelfContainedPluginAlt{
             fr.addMessage("Input Data path is: " + getInputPath());
             fr.addMessage("Compute Options Written To string Yeilds:");
             fr.addMessage(wco.toString());
-            ArrayList<hec.ensemble.EnsembleTimeSeries> etsList = new ArrayList<>();
             String outputPath = changeExtension(wco.getDssFilename(),"db");
             //this should only happen once per lifecycle...
             if(!wco.isModelFirstTime()){ return returnValue;}
@@ -184,47 +186,45 @@ public class ForecastGeneratorAlternative extends SelfContainedPluginAlt{
                     }
                 }
             }
-            try {
-                hec.JdbcTimeSeriesDatabase dbase = new hec.JdbcTimeSeriesDatabase(_inputPath, false);
-                hec.ensemble.TimeSeriesIdentifier[] locations = dbase.getTimeSeriesIDs();
-                int count = 0;
-                //for (hec.ensemble.TimeSeriesIdentifier tsid : locations) {
-                    hec.ensemble.EnsembleTimeSeries ets = dbase.getEnsembleTimeSeries(locations[0]);
-                    //loop through the ets and modify the values based on the random number.
-                    //will need to put them in a temporary store problably
-//                    for(ZonedDateTime t: ets.getIssueDates()){
-//                        hec.ensemble.Ensemble e = ets.getEnsemble(t);
-//                        for(float[] v : e.getValues()){
-//                            
-//                        }
-//                    }
-                    etsList.add(ets);
-                    count += ets.getCount();
-                //}
-                fr.addMessage("Found " + Integer.toString(locations.length) + " locations");
-                fr.addMessage("Location " + ets.getTimeSeriesIdentifier().location + " has " + Integer.toString(count) + " ensembles.");
-                hec.ensemble.Ensemble e = ets.getEnsemble(ets.getIssueDates().get(0),25);
-                fr.addMessage("The first ensemble has " + e.getValues().length + " ensemble members with " + e.getValues()[0].length + " values.");
-            } catch (Exception ex) {
-                Logger.getLogger(ForecastGeneratorAlternative.class.getName()).log(Level.SEVERE, null, ex);
-            }
-            
-            try {
-                fr.addMessage("Output Path " + outputPath);
-                hec.JdbcTimeSeriesDatabase dbaseOut = new hec.JdbcTimeSeriesDatabase(outputPath,true);
-                dbaseOut.write(etsList.toArray(new hec.ensemble.EnsembleTimeSeries[0]));
-            } catch (Exception ex) {
-                Logger.getLogger(ForecastGeneratorAlternative.class.getName()).log(Level.SEVERE, null, ex);
-            }
+            double multiplier = 0.0;
             if(wco.isFrmCompute()){
                 //stochastic
                 //in this case, the data needs to be copied to the lifecycle directory based on the time window of the lifecycle?
-                
+                multiplier = wco.getEventRandom();
                 
             }else{
                 //deterministic
                 //in a deterministic compute, the file should be copied (based on the Time Window) without manipulation.
+                multiplier = 10.0;
             }
+            try {
+                hec.JdbcTimeSeriesDatabase dbase = new hec.JdbcTimeSeriesDatabase(_inputPath, hec.JdbcTimeSeriesDatabase.CREATION_MODE.OPEN_EXISTING_UPDATE);
+                List<hec.ensemble.TimeSeriesIdentifier> locations = dbase.getTimeSeriesIDs();
+                ArrayList<EnsembleTimeSeries> etsList = new ArrayList<>();
+                int count = 0;
+                for(TimeSeriesIdentifier tsid: locations) {
+                    System.out.println(tsid.toString());
+                    EnsembleTimeSeries etsr = dbase.getEnsembleTimeSeries(tsid);
+                    EnsembleTimeSeries modifiedEts = new EnsembleTimeSeries(tsid,
+                            etsr.getUnits(),etsr.getDataType(),etsr.getVersion());
+                    for( Ensemble e : etsr){
+                        for(float[] v : e.getValues()){
+                            for (int i = 0; i <v.length ; i++) {
+                                v[i] = (float) (v[i]*multiplier);// offset by multiplier
+                            }
+                        }
+                        modifiedEts.addEnsemble(e);
+                        count ++;
+                    }
+                    etsList.add(modifiedEts);
+                    fr.addMessage("Output Path " + outputPath);
+                    hec.JdbcTimeSeriesDatabase dbaseOut = new hec.JdbcTimeSeriesDatabase(outputPath,hec.JdbcTimeSeriesDatabase.CREATION_MODE.CREATE_NEW_OR_OPEN_EXISTING_UPDATE);
+                    dbaseOut.write(etsList.toArray(new hec.ensemble.EnsembleTimeSeries[0]));
+                }
+            } catch (Exception ex) {
+                Logger.getLogger(ForecastGeneratorAlternative.class.getName()).log(Level.SEVERE, null, ex);
+            }
+
             return returnValue;
         }
         //theoretically, this could mean it is a CWMS compute. 
