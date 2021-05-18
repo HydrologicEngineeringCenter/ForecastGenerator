@@ -1,0 +1,3 @@
+[submodule "FIRO_TSEnsembles"]
+	path = FIRO_TSEnsembles
+	url = https://github.com/HydrologicEngineeringCenter/FIRO_TSEnsembles.git
