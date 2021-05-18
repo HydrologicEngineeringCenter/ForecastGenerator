@@ -51,6 +51,6 @@ jar {
     sourceCompatibility = JavaVersion.VERSION_1_8
     targetCompatibility = JavaVersion.VERSION_1_8
     manifest {
-        attributes "WatPluginMainClass": "FIRO_WFP_Plugin"
+        attributes "WatPluginMainClass": "ForecastGeneratorPlugin"
     }
 }
