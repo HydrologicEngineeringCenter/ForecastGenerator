@@ -5,9 +5,6 @@ plugins {
 repositories {
     mavenCentral()
     flatDir{
-        dirs ("lib")
-    }
-    flatDir{
         dirs ("FIRO_TSEnsembles/build/libs")
     }
     maven {
