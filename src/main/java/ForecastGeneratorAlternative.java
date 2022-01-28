@@ -7,7 +7,6 @@
 import com.rma.io.RmaFile;
 import hec.ensemble.Ensemble;
 import hec.ensemble.EnsembleTimeSeries;
-import hec.ensemble.TimeSeriesIdentifier;
 import hec2.model.DataLocation;
 import hec2.plugin.model.ComputeOptions;
 import hec2.plugin.selfcontained.SelfContainedPluginAlt;
@@ -182,14 +181,14 @@ public class ForecastGeneratorAlternative extends SelfContainedPluginAlt{
             }else{
                 //deterministic
                 //in a deterministic compute, the file should be copied (based on the Time Window) without manipulation.
-                multiplier = 10.0;
+                multiplier = 1.0;
             }
             try {
-                hec.JdbcTimeSeriesDatabase dbase = new hec.JdbcTimeSeriesDatabase(_inputPath, hec.JdbcTimeSeriesDatabase.CREATION_MODE.OPEN_EXISTING_UPDATE);
-                List<hec.ensemble.TimeSeriesIdentifier> locations = dbase.getTimeSeriesIDs();
+                hec.SqliteDatabase dbase = new hec.SqliteDatabase(_inputPath, hec.SqliteDatabase.CREATION_MODE.OPEN_EXISTING_UPDATE);
+                List<hec.RecordIdentifier> locations = dbase.getEnsembleTimeSeriesIDs();
                 ArrayList<EnsembleTimeSeries> etsList = new ArrayList<>();
                 int count = 0;
-                for(TimeSeriesIdentifier tsid: locations) {
+                for(hec.RecordIdentifier tsid: locations) {
                     System.out.println(tsid.toString());
                     EnsembleTimeSeries etsr = dbase.getEnsembleTimeSeries(tsid);
                     EnsembleTimeSeries modifiedEts = new EnsembleTimeSeries(tsid,
@@ -205,7 +204,7 @@ public class ForecastGeneratorAlternative extends SelfContainedPluginAlt{
                     }
                     etsList.add(modifiedEts);
                     fr.addMessage("Output Path " + outputPath);
-                    hec.JdbcTimeSeriesDatabase dbaseOut = new hec.JdbcTimeSeriesDatabase(outputPath,hec.JdbcTimeSeriesDatabase.CREATION_MODE.CREATE_NEW_OR_OPEN_EXISTING_UPDATE);
+                    hec.SqliteDatabase dbaseOut = new hec.SqliteDatabase(outputPath,hec.SqliteDatabase.CREATION_MODE.CREATE_NEW_OR_OPEN_EXISTING_UPDATE);
                     dbaseOut.write(etsList.toArray(new hec.ensemble.EnsembleTimeSeries[0]));
                 }
             } catch (Exception ex) {

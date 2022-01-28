@@ -16,12 +16,17 @@
         </option>
       </GradleProjectSettings>
       <GradleProjectSettings>
+        <option name="delegatedBuild" value="true" />
+        <option name="testRunner" value="GRADLE" />
         <option name="distributionType" value="DEFAULT_WRAPPED" />
         <option name="externalProjectPath" value="$PROJECT_DIR$/FIRO_TSEnsembles" />
-        <option name="gradleJvm" value="11" />
+        <option name="gradleJvm" value="corretto-1.8" />
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$/FIRO_TSEnsembles" />
+            <option value="$PROJECT_DIR$/FIRO_TSEnsembles/FIRO_TSEnsembles" />
+            <option value="$PROJECT_DIR$/FIRO_TSEnsembles/ensemble-view" />
+            <option value="$PROJECT_DIR$/FIRO_TSEnsembles/firoplugin" />
           </set>
         </option>
       </GradleProjectSettings>

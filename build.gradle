@@ -5,15 +5,18 @@ plugins {
 repositories {
     mavenCentral()
     flatDir{
-        dirs ("FIRO_TSEnsembles/build/libs")
+        dirs ("FIRO_TSEnsembles/FIRO_TSEnsembles/build/libs")
     }
     maven {
         url "https://www.hec.usace.army.mil/nexus/repository/maven-public/"
     }
 }
-
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+}
 dependencies {
-    implementation name: "FIRO_TSEnsembles"
+    implementation name: "FIRO_TSEnsembles-1.0.1"
     implementation "org.junit.jupiter:junit-jupiter:5.4.2"
     implementation 'mil.army.usace.hec.wat:wat-hec-maps:dev-3.0.0.1856-20210504.234927-1@jar'
     implementation 'mil.army.usace.hec.wat:wat-hec:dev-3.0.0.1855-20210504.180613-1@jar'
@@ -42,6 +45,7 @@ tasks.withType(Test) {
     useJUnitPlatform()
     jvmArgs "--enable-preview"
 }
+
 
 //Publishing
 group 'mil.army.usace.hec'
